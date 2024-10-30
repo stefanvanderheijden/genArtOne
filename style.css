@@ -1,0 +1,19 @@
+/* Basic styling */
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background-color: #fdfff8;
+}
+/* Canvas container styling */
+#canvas-container {
+  width: 80vw;
+  height: 80vh;
+  outline: 2px solid #000b52; /* Acts like a border but outside the element */
+  margin-top: 20px;
+}
