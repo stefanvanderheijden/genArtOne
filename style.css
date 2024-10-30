@@ -12,7 +12,7 @@ body {
 }
 /* Canvas container styling */
 #canvas-container {
-  width: 80vw;
+  width: 80vh;
   height: 80vh;
   outline: 2px solid #000b52; /* Acts like a border but outside the element */
   margin-top: 20px;
