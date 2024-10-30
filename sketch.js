@@ -18,6 +18,7 @@ function setup() {
 
   // Create a new instance of SimplexNoise
   simplex = new SimplexNoise();
+  noLoop();
 }
 
 function draw() {
@@ -27,13 +28,16 @@ function draw() {
   let verticalStep = totalVerticalDistance / gridDimension;
 
   strokeWeight(1);
+  noFill();
 
   for (let index = 0; index < gridDimension + 1; index++) {
     let y = margin + index * verticalStep;
 
     for (let index = 0; index < gridDimension + 1; index++) {
       let x = margin + index * verticalStep;
-      circle(x, y, 4);
+      let diameter =
+        sin(frameCount * 0.01 + x * 0.01 + y * 0.01) * verticalStep;
+      circle(x, y, diameter);
     }
   }
 }
