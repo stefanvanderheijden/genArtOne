@@ -4,6 +4,8 @@ let margin = 50;
 let canvasContainer, containerWidth, containerHeight;
 
 let gridDimension = 30;
+let simplexScale = 0.003;
+let timeScale = 0.005;
 
 function setup() {
   canvasContainer = select("#canvas-container");
@@ -18,7 +20,6 @@ function setup() {
 
   // Create a new instance of SimplexNoise
   simplex = new SimplexNoise();
-  noLoop();
 }
 
 function draw() {
@@ -28,15 +29,23 @@ function draw() {
   let verticalStep = totalVerticalDistance / gridDimension;
 
   strokeWeight(1);
-  noFill();
+  fill(0);
 
   for (let index = 0; index < gridDimension + 1; index++) {
     let y = margin + index * verticalStep;
 
     for (let index = 0; index < gridDimension + 1; index++) {
       let x = margin + index * verticalStep;
-      let diameter =
-        sin(frameCount * 0.01 + x * 0.01 + y * 0.01) * verticalStep;
+
+      let noise =
+        simplex.noise3D(
+          x * simplexScale,
+          y * simplexScale,
+          frameCount * timeScale
+        ) *
+          0.5 +
+        0.5;
+      let diameter = 5 + noise * verticalStep;
       circle(x, y, diameter);
     }
   }
