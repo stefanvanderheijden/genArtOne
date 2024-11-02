@@ -1,10 +1,13 @@
 let simplex;
-let margin = 100;
+let marginX = 100;
+let marginY = 200;
 
 let canvasContainer, containerWidth, containerHeight;
 
-let gridDimension = 100;
-let simplexScale = 0.0025;
+let gridDimensionX = 100;
+let gridDimensionY = 30;
+let simplexScaleX = 0.0025;
+let simplexScaleY = 0.005;
 let timeScale = 0.005;
 
 function gaussian(x) {
@@ -35,26 +38,28 @@ function setup() {
 function draw() {
   background("#000000");
 
-  let totalVerticalDistance = containerHeight - margin * 2;
-  let verticalStep = totalVerticalDistance / gridDimension;
+  let totalVerticalDistance = containerHeight - marginY * 2;
+  let totalHorizontalDistance = containerWidth - marginX * 2;
+  let verticalStep = totalVerticalDistance / gridDimensionY;
+  let horizontalStep = totalHorizontalDistance / gridDimensionX;
 
-  strokeWeight(1);
+  strokeWeight(2);
   stroke("#ffffff");
-  // fill("#000000");
-  noFill();
+  fill("#000000");
+  // noFill();
 
-  for (let index = 0; index < gridDimension + 1; index++) {
-    let y = margin + index * verticalStep;
+  for (let index = 0; index < gridDimensionY + 1; index++) {
+    let y = marginY + index * verticalStep;
     beginShape();
 
-    // vertex(margin, y + 400);
-    for (let index = 0; index < gridDimension + 1; index++) {
-      let x = margin + index * verticalStep;
+    vertex(marginX, y + 400);
+    for (let index = 0; index < gridDimensionX + 1; index++) {
+      let x = marginX + index * horizontalStep;
 
       let noise =
         simplex.noise2D(
-          x * simplexScale,
-          y * simplexScale - frameCount * timeScale
+          x * simplexScaleX,
+          y * simplexScaleY - frameCount * timeScale
         ) *
           0.5 +
         0.5;
@@ -63,12 +68,22 @@ function draw() {
       let bump = -gaussian(distance / 100);
       let addedBump = bump * 100;
 
-      let damp = shiftedGaussian(margin, margin + totalVerticalDistance, x);
+      let damp = shiftedGaussian(marginX, marginX + totalHorizontalDistance, x);
 
-      // vertex(x, y + noise * 200 * -damp + addedBump);
-      vertex(x, y + addedBump * damp);
+      vertex(x, y + noise * 200 * -damp + addedBump);
+      // vertex(x, y + addedBump * damp);
     }
-    // vertex(totalVerticalDistance + margin, y + 400);
+    vertex(totalHorizontalDistance + marginX, y + 400);
     endShape();
   }
+  noStroke();
+  // stroke("#ef0000");
+  fill("#000000");
+  rect(0, 0, marginX + 2, containerHeight);
+  rect(
+    marginX + totalHorizontalDistance - 2,
+    0,
+    containerWidth,
+    containerHeight
+  );
 }
