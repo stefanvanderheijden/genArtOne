@@ -1,11 +1,21 @@
 let simplex;
-let margin = 50;
+let margin = 100;
 
 let canvasContainer, containerWidth, containerHeight;
 
-let gridDimension = 30;
-let simplexScale = 0.003;
+let gridDimension = 50;
+let simplexScale = 0.0025;
 let timeScale = 0.005;
+
+function gaussian(x) {
+  let factor = Math.exp(-(x ** 2));
+  return factor;
+}
+
+function shiftedGaussian(start, end, value) {
+  let normalizedX = map(value, start, end, -1.5, 1.5);
+  return gaussian(normalizedX);
+}
 
 function setup() {
   canvasContainer = select("#canvas-container");
@@ -23,30 +33,36 @@ function setup() {
 }
 
 function draw() {
-  background("#ffedc0");
+  background("#000000");
 
   let totalVerticalDistance = containerHeight - margin * 2;
   let verticalStep = totalVerticalDistance / gridDimension;
 
   strokeWeight(1);
-  fill(0);
+  stroke("#ffffff");
+  fill("#000000");
 
   for (let index = 0; index < gridDimension + 1; index++) {
     let y = margin + index * verticalStep;
+    beginShape();
 
+    // vertex(margin, y + 400);
     for (let index = 0; index < gridDimension + 1; index++) {
       let x = margin + index * verticalStep;
 
       let noise =
-        simplex.noise3D(
+        simplex.noise2D(
           x * simplexScale,
-          y * simplexScale,
-          frameCount * timeScale
+          y * simplexScale - frameCount * timeScale
         ) *
           0.5 +
         0.5;
-      let diameter = 5 + noise * verticalStep;
-      circle(x, y, diameter);
+
+      let damp = shiftedGaussian(margin, margin + totalVerticalDistance, x);
+
+      vertex(x, y + noise * 200 * -damp);
     }
+    // vertex(totalVerticalDistance + margin, y + 400);
+    endShape();
   }
 }
