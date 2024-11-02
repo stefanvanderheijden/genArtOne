@@ -3,7 +3,7 @@ let margin = 100;
 
 let canvasContainer, containerWidth, containerHeight;
 
-let gridDimension = 50;
+let gridDimension = 100;
 let simplexScale = 0.0025;
 let timeScale = 0.005;
 
@@ -13,7 +13,7 @@ function gaussian(x) {
 }
 
 function shiftedGaussian(start, end, value) {
-  let normalizedX = map(value, start, end, -1.5, 1.5);
+  let normalizedX = map(value, start, end, -2, 2);
   return gaussian(normalizedX);
 }
 
@@ -40,7 +40,8 @@ function draw() {
 
   strokeWeight(1);
   stroke("#ffffff");
-  fill("#000000");
+  // fill("#000000");
+  noFill();
 
   for (let index = 0; index < gridDimension + 1; index++) {
     let y = margin + index * verticalStep;
@@ -58,9 +59,14 @@ function draw() {
           0.5 +
         0.5;
 
+      let distance = dist(mouseX, mouseY, x, y);
+      let bump = -gaussian(distance / 100);
+      let addedBump = bump * 100;
+
       let damp = shiftedGaussian(margin, margin + totalVerticalDistance, x);
 
-      vertex(x, y + noise * 200 * -damp);
+      // vertex(x, y + noise * 200 * -damp + addedBump);
+      vertex(x, y + addedBump * damp);
     }
     // vertex(totalVerticalDistance + margin, y + 400);
     endShape();
