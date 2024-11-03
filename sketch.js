@@ -1,14 +1,14 @@
 let simplex;
 let marginX = 100;
-let marginY = 200;
+let marginY = 600;
 
-let canvasContainer, containerWidth, containerHeight;
+let canvasContainer, containerWidth, containerHeight, colorTop, colorBottom;
 
-let gridDimensionX = 100;
-let gridDimensionY = 30;
+let gridDimensionX = 300;
+let gridDimensionY = 60;
 let simplexScaleX = 0.0025;
-let simplexScaleY = 0.005;
-let timeScale = 0.005;
+let simplexScaleY = 0.0015;
+let timeScale = 0.006;
 
 function gaussian(x) {
   let factor = Math.exp(-(x ** 2));
@@ -24,6 +24,11 @@ function setup() {
   canvasContainer = select("#canvas-container");
   containerWidth = canvasContainer.width;
   containerHeight = canvasContainer.height;
+  colorMode(HSL);
+
+  backgroundColor = color("#000000");
+  colorTop = color("#1900ff");
+  colorBottom = color("#ffff00");
 
   console.log("Canvas Width: " + containerWidth);
   console.log("Canvas Height: " + containerHeight);
@@ -36,21 +41,27 @@ function setup() {
 }
 
 function draw() {
-  background("#000000");
+  marginY = 300 + sin(frameCount * 0.01) * 400;
+  background(backgroundColor);
+  let verticalScale = 150 + sin(frameCount * 0.01) * 150;
 
   let totalVerticalDistance = containerHeight - marginY * 2;
   let totalHorizontalDistance = containerWidth - marginX * 2;
   let verticalStep = totalVerticalDistance / gridDimensionY;
   let horizontalStep = totalHorizontalDistance / gridDimensionX;
 
-  strokeWeight(2);
   stroke("#ffffff");
-  fill("#000000");
+  fill(backgroundColor);
   // noFill();
 
   for (let index = 0; index < gridDimensionY + 1; index++) {
     let y = marginY + index * verticalStep;
+    let normalizedY = (y - marginY) / totalVerticalDistance;
     beginShape();
+
+    let localColor = lerpColor(colorTop, colorBottom, normalizedY);
+    strokeWeight(normalizedY * 5 + 1);
+    stroke(localColor);
 
     vertex(marginX, y + 400);
     for (let index = 0; index < gridDimensionX + 1; index++) {
@@ -59,10 +70,12 @@ function draw() {
       let noise =
         simplex.noise2D(
           x * simplexScaleX,
-          y * simplexScaleY - frameCount * timeScale
+          y * simplexScaleY + frameCount * timeScale
         ) *
           0.5 +
         0.5;
+
+      let subnoise = simplex.noise2D(x * 0.05 - frameCount * 0.01, y * 0.05);
 
       let distance = dist(mouseX, mouseY, x, y);
       let bump = -gaussian(distance / 100);
@@ -70,18 +83,18 @@ function draw() {
 
       let damp = shiftedGaussian(marginX, marginX + totalHorizontalDistance, x);
 
-      vertex(x, y + noise * 200 * -damp + addedBump);
-      // vertex(x, y + addedBump * damp);
+      vertex(x, y + noise * verticalScale * -damp + addedBump + subnoise * 3);
+      // vertex(x, y + addedBump * 5 * damp + subnoise * 3);
     }
     vertex(totalHorizontalDistance + marginX, y + 400);
     endShape();
   }
   noStroke();
   // stroke("#ef0000");
-  fill("#000000");
-  rect(0, 0, marginX + 2, containerHeight);
+  fill(backgroundColor);
+  rect(0, 0, marginX + 4, containerHeight);
   rect(
-    marginX + totalHorizontalDistance - 2,
+    marginX + totalHorizontalDistance - 4,
     0,
     containerWidth,
     containerHeight
